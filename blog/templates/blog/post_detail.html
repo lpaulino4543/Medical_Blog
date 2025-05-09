@@ -1,0 +1,43 @@
+{% if user == post.author %}
+<div class="mt-4 flex space-x-4">
+    <a href="{% url 'post_update' year=post.created_at.year month=post.created_at.month day=post.created_at.day slug=post.slug %}" 
+       class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
+        Edit
+    </a>
+    <a href="{% url 'post_delete' year=post.created_at.year month=post.created_at.month 
+day=post.created_at.day slug=post.slug %}" 
+       class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+        Delete
+    </a>
+</div>
+{% endif %}
+
+
+<section class="mt-12">
+    <h3 class="text-xl font-bold mb-4">Comments ({{ comments.count }})</h3>
+    
+    <!-- Comment Form -->
+    <form method="post" action="{% url 'add_comment' post.pk %}" class="mb-8 p-4 bg-gray-50 
+rounded">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded 
+hover:bg-blue-700">
+            Submit Comment
+        </button>
+    </form>
+
+    <!-- Comment List -->
+    <div class="space-y-4">
+        {% for comment in comments %}
+            <div class="p-4 bg-white rounded shadow">
+                <div class="font-bold">{{ comment.name }}</div>
+                <div class="text-sm text-gray-500 mb-2">{{ comment.created_at|date:"F d, Y" 
+}}</div>
+                <p>{{ comment.body }}</p>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
+</section>

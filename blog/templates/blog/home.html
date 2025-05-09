@@ -1,0 +1,71 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row gap-8">
+    <!-- Main Content -->
+    <div class="w-full md:w-3/4">
+        <h1 class="text-3xl font-bold mb-6">Latest Medical Articles</h1>
+        
+        <!-- Search Form -->
+        <form method="get" class="mb-6">
+            <div class="flex">
+                <input type="text" name="q" value="{{ search_query }}" 
+                       placeholder="Search articles..."
+                       class="flex-grow px-4 py-2 border rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700">
+                    Search
+                </button>
+            </div>
+        </form>
+        <!-- Blog Posts -->
+        {% for post in page_obj %}
+        <article class="mb-8 p-6 bg-white rounded-lg shadow">
+            <h2 class="text-2xl font-bold mb-2">
+                <a href="{{ post.get_absolute_url }}" class="text-blue-600 hover:underline">{{ post.title }}</a>
+            </h2>
+            <div class="text-gray-600 mb-2">
+                <span>By {{ post.author.username }} on {{ post.created_at|date:"F d, Y" }}</span>
+                {% if post.categories.all %}
+                <span class="ml-2">
+                    in
+                    {% for category in post.categories.all %}
+                    <a href="{% url 'posts_by_category' category.slug %}" class="text-blue-500 hover:underline">
+                        {{ category.name }}{% if not forloop.last %}, {% endif %}
+                    </a>
+                    {% endfor %}
+                </span>
+                {% endif %}
+            </div>
+            <p class="mb-4">{{ post.content|truncatewords:50 }}</p>
+            <a href="{{ post.get_absolute_url }}" class="text-blue-600 hover:underline">Read more →</a>
+        </article>
+        {% empty %}
+        <p class="text-gray-600">No articles found.</p>
+        {% endfor %}
+
+        
+    </div>
+
+    <!-- Sidebar -->
+    <div class="w-full md:w-1/4">
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h3 class="text-xl font-bold mb-4">Categories</h3>
+            <ul class="space-y-2">
+                <li><a href="{% url 'home' %}" class="text-blue-600 hover:underline">All Categories</a></li>
+                {% for category in categories %}
+                <li>
+                    <a href="{% url 'posts_by_category' category.slug %}" 
+                       class="text-blue-600 hover:underline {% if current_category == category.slug %}font-bold{% endif %}">
+                        {{ category.name }} ({{ category.blog_posts.count }})
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        
+    </div>
+</div>
+{% endblock %}

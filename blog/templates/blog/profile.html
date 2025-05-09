@@ -1,0 +1,38 @@
+{% extends "blog/base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Profile Info -->
+    <div class="bg-white p-6 rounded-lg shadow mb-8">
+        <h1 class="text-2xl font-bold mb-4">My Profile</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Update Profile
+            </button>
+        </form>
+    </div>
+
+    <!-- User's Posts -->
+    <h2 class="text-xl font-bold mb-4">My Articles</h2>
+    {% for post in user_posts %}
+        <div class="bg-white p-4 rounded shadow mb-4">
+            <h3 class="font-bold">
+                <a href="{{ post.get_absolute_url }}" class="text-blue-600 hover:underline">
+                    {{ post.title }}
+                </a>
+            </h3>
+            <p class="text-sm text-gray-500">
+                {{ post.created_at|date:"F d, Y" }} • 
+                {{ post.categories.all|join:", " }}
+            </p>
+        </div>
+    {% empty %}
+        <p>You haven't written any articles yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
+
